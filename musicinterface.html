@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Music Player</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #1e1e2f, #3a3a5a);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .player {
+        background: #2c2c3e;
+        padding: 20px;
+        border-radius: 15px;
+        width: 300px;
+        text-align: center;tory using this column-rule-width: ;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .title {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .controls button {
+        margin: 10px;
+        padding: 10px;
+        border: none;
+        border-radius: 50%;
+        background: #ff6b6b;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .controls button:hover {
+        background: #ff3b3b;
+    }
+
+    input[type="range"] {
+        width: 100%;
+    }
+</style>
+</head>
+<body>
+
+<div class="player">
+    <h2>AI Music Player 🎵</h2>
+    <div class="title" id="songTitle">Loading...</div>
+
+    <audio id="audio"></audio>
+
+    <input type="range" id="progress" value="0">
+
+    <div class="controls">
+        <button onclick="prevSong()">⏮</button>
+        <button onclick="playPause()" id="playBtn">▶</button>
+        <button onclick="nextSong()">⏭</button>
+    </div>
+</div>
+
+<script>
+    const songs = [
+        { title: "Song 1", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+        { title: "Song 2", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+        { title: "Song 3", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+    ];
+
+    let currentSong = 0;
+    const audio = document.getElementById("audio");
+    const title = document.getElementById("songTitle");
+    const progress = document.getElementById("progress");
+    const playBtn = document.getElementById("playBtn");
+
+    // Load song
+    function loadSong(index) {
+        audio.src = songs[index].src;
+        title.innerText = songs[index].title;
+    }
+
+    // Play / Pause
+    function playPause() {
+        if (audio.paused) {
+            audio.play();
+            playBtn.innerText = "⏸";
+        } else {
+            audio.pause();
+            playBtn.innerText = "▶";
+        }
+    }
+
+    // Next song
+    function nextSong() {
+        currentSong = (currentSong + 1) % songs.length;
+        loadSong(currentSong);
+        audio.play();
+    }
+
+    // Previous song
+    function prevSong() {
+        currentSong = (currentSong - 1 + songs.length) % songs.length;
+        loadSong(currentSong);
+        audio.play();
+    }
+
+    // Update progress bar
+    audio.addEventListener("timeupdate", () => {
+        progress.value = (audio.currentTime / audio.duration) * 100;
+    });
+
+    // Seek
+    progress.addEventListener("input", () => {
+        audio.currentTime = (progress.value / 100) * audio.duration;
+    });
+
+    // --- Simple ML-like recommendation (mock logic) ---
+    // Tracks play count and suggests most played song
+    let playCounts = [0, 0, 0];
+
+    audio.addEventListener("play", () => {
+        playCounts[currentSong]++;
+        recommendSong();
+    });
+
+    function recommendSong() {
+        let maxIndex = playCounts.indexOf(Math.max(...playCounts));
+        console.log("Recommended song:", songs[maxIndex].title);
+    }
+
+    // Initialize
+    loadSong(currentSong);
+</script>
+
+</body>
+</html>
